@@ -14,6 +14,7 @@
   let unlocked = false;
   let foundHearts = 0;
   let audio = null;
+  let audioFadeTimer = null;
 
   document.title = cfg.site?.title || "A Little Birthday Story";
 
@@ -164,6 +165,16 @@
     }
 
     audio.play().then(() => {
+      // Gentle fade-in so the song enters the scene instead of jumping in.
+      const target = audio.volume;
+      audio.volume = 0;
+      window.clearInterval(audioFadeTimer);
+      let step = 0;
+      audioFadeTimer = window.setInterval(() => {
+        step += 1;
+        audio.volume = Math.min(target, target * (step / 18));
+        if (audio.volume >= target) window.clearInterval(audioFadeTimer);
+      }, 45);
       toggle.classList.add("playing");
       toggle.textContent = "♫";
       toggle.title = "Pause music";
@@ -187,6 +198,8 @@
     setupIntroButton();
     setupReplay();
     setupSoundButton();
+    setupRevealAnimations();
+    setupAmbientParallax();
   }
 
   // ---------- SCRATCH CARDS ----------
@@ -467,6 +480,7 @@
       closeLetter();
 
       if (audio) {
+        window.clearInterval(audioFadeTimer);
         audio.pause();
         audio.currentTime = 0;
       }
@@ -508,6 +522,44 @@
         toggle.title = "Play music";
       }
     }, { once: false });
+  }
+
+  // ---------- REVEAL + AMBIENT MOTION ----------
+  function setupRevealAnimations() {
+    const items = document.querySelectorAll(".section-heading, .section-copy, .intro-card, .scratch-card, .letter-card, .heart-field, .final-card");
+    if (!("IntersectionObserver" in window)) {
+      items.forEach((item) => item.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        obs.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -50px" });
+
+    items.forEach((item) => {
+      item.classList.add("reveal-on-scroll");
+      observer.observe(item);
+    });
+  }
+
+  function setupAmbientParallax() {
+    const hero = $(".hero");
+    const glow = $(".hero-glow");
+    if (!hero || !glow || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const y = Math.min(window.scrollY, window.innerHeight);
+      glow.style.transform = `translate3d(0, ${y * 0.08}px, 0) scale(${1 + y * 0.00015})`;
+    };
+    window.addEventListener("scroll", () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    }, { passive: true });
   }
 
   // ---------- SCROLL PROGRESS ----------
