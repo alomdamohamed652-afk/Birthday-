@@ -2,83 +2,150 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#fff8f7" />
-  <title>Birthday Surprise</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#fff9f7" />
+  <meta name="description" content="A little birthday story made with love." />
+  <title>A Little Birthday Story</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="grain" aria-hidden="true"></div>
   <div id="hearts" class="hearts" aria-hidden="true"></div>
+
   <main id="app">
+    <!-- LOCK / PIN -->
     <section id="lock-screen" class="screen lock-screen">
+      <div class="lock-orb orb-one"></div>
+      <div class="lock-orb orb-two"></div>
+
       <div class="lock-card">
         <div class="tiny-heart">♡</div>
-        <p class="eyebrow">A SPECIAL DELIVERY</p>
-        <h1>Something special<br>is waiting for you.</h1>
+        <p class="eyebrow" id="lock-eyebrow"></p>
+        <h1 id="lock-title"></h1>
         <p class="subtitle" id="lock-subtitle"></p>
-        <div class="pin-wrap" aria-label="Birthday date">
-          <div class="pin-slots" id="pin-slots"></div>
-          <div class="pin-hint">ENTER YOUR BIRTHDAY</div>
+
+        <div class="pin-wrap">
+          <div class="pin-slots" id="pin-slots" aria-label="Birthday date"></div>
+          <div class="pin-hint" id="pin-hint"></div>
         </div>
+
         <div class="keypad" id="keypad"></div>
         <p class="error" id="pin-error" aria-live="polite"></p>
       </div>
+
+      <p class="lock-footer">made for one special person · ♡</p>
     </section>
 
-    <section id="birthday-screen" class="screen birthday-screen hidden">
-      <header class="hero">
-        <p class="eyebrow">A LITTLE SOMETHING FOR YOU</p>
-        <h2>Happy Birthday,<br><span id="recipient-name">Someone Special</span></h2>
-        <p class="scroll-note">SCROLL TO BEGIN · ♥</p>
-        <div class="dot-heart">♡</div>
+    <!-- MAIN EXPERIENCE -->
+    <section id="birthday-screen" class="birthday-screen hidden">
+      <div class="top-progress" aria-hidden="true">
+        <span id="progress-bar"></span>
+      </div>
+
+      <button id="sound-toggle" class="sound-toggle" type="button" aria-label="Toggle music">♪</button>
+
+      <header class="hero" data-section="hero">
+        <div class="hero-glow"></div>
+        <p class="eyebrow" id="hero-eyebrow"></p>
+        <h2><span id="hero-prefix"></span><br><em id="recipient-name"></em></h2>
+        <p class="scroll-note" id="hero-scroll"></p>
+        <div class="mouse-icon"><span></span></div>
+        <div class="hero-petal petal-a">♡</div>
+        <div class="hero-petal petal-b">♥</div>
+        <div class="hero-petal petal-c">♡</div>
       </header>
 
-      <section class="section intro-section">
-        <div class="section-title"><span>01</span><h3>A few little things...</h3></div>
-        <p id="intro-text" class="lead"></p>
+      <section class="section intro-section" data-section="intro">
+        <div class="section-heading">
+          <span class="section-number">01</span>
+          <div>
+            <p class="eyebrow">A LITTLE BEGINNING</p>
+            <h3 id="intro-title"></h3>
+          </div>
+        </div>
+        <div class="intro-card">
+          <span class="quote-mark">“</span>
+          <p id="intro-text" class="lead"></p>
+          <button class="soft-button" id="intro-button" type="button"></button>
+        </div>
       </section>
 
-      <section class="section scratch-section">
-        <div class="section-title"><span>02</span><h3>Scratch to reveal</h3></div>
-        <p class="section-copy">Use your finger or mouse. There are little messages hiding underneath. ♡</p>
+      <section class="section scratch-section" data-section="scratch">
+        <div class="section-heading">
+          <span class="section-number">02</span>
+          <div>
+            <p class="eyebrow">LITTLE SECRETS</p>
+            <h3 id="scratch-title"></h3>
+          </div>
+        </div>
+        <p class="section-copy" id="scratch-copy"></p>
         <div class="scratch-grid" id="scratch-grid"></div>
       </section>
 
-      <section class="section letters-section">
-        <div class="section-title"><span>03</span><h3>You have mail</h3></div>
-        <p class="section-copy">Open each little letter when you're ready.</p>
+      <section class="section letters-section" data-section="letters">
+        <div class="section-heading">
+          <span class="section-number">03</span>
+          <div>
+            <p class="eyebrow">YOU HAVE MAIL</p>
+            <h3 id="letters-title"></h3>
+          </div>
+        </div>
+        <p class="section-copy" id="letters-copy"></p>
         <div class="letters-grid" id="letters-grid"></div>
       </section>
 
-      <section class="section memories-section">
-        <div class="section-title"><span>04</span><h3>Little pieces of happiness</h3></div>
+      <section class="section memories-section" data-section="hearts">
+        <div class="section-heading">
+          <span class="section-number">04</span>
+          <div>
+            <p class="eyebrow">FIND THE HEARTS</p>
+            <h3 id="hearts-title"></h3>
+          </div>
+        </div>
+        <p class="section-copy" id="hearts-copy"></p>
         <div class="heart-field" id="heart-field"></div>
+        <p class="found-count"><span id="found-count">0</span> / <span id="heart-total">0</span> little hearts found</p>
       </section>
 
-      <section class="final-section">
+      <section class="final-section" data-section="final">
         <div class="final-card">
+          <div class="final-stars">✦　♡　✦</div>
           <div class="big-heart">♥</div>
-          <p class="eyebrow">THE LAST ONE</p>
+          <p class="eyebrow" id="final-eyebrow"></p>
           <h3 id="final-title"></h3>
           <p id="final-message"></p>
           <div class="signature" id="signature"></div>
+          <button class="replay-button" id="replay-button" type="button"></button>
         </div>
       </section>
     </section>
   </main>
 
-  <div class="modal hidden" id="letter-modal" role="dialog" aria-modal="true">
+  <!-- LETTER MODAL -->
+  <div class="modal hidden" id="letter-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-backdrop" data-close></div>
     <article class="letter-modal">
       <button class="close-btn" data-close aria-label="Close">×</button>
-      <div class="envelope-mark">♡</div>
-      <p class="eyebrow" id="modal-label"></p>
-      <h3 id="modal-title"></h3>
-      <p id="modal-message"></p>
+      <div class="opened-envelope">
+        <div class="paper-sheet">
+          <span class="paper-heart">♡</span>
+          <p class="eyebrow" id="modal-label"></p>
+          <h3 id="modal-title"></h3>
+          <p id="modal-message"></p>
+          <div class="paper-line"></div>
+          <span class="paper-sign">♥</span>
+        </div>
+      </div>
     </article>
+  </div>
+
+  <!-- HEART MESSAGE TOAST -->
+  <div class="heart-toast hidden" id="heart-toast">
+    <span>♡</span>
+    <p id="heart-toast-message"></p>
   </div>
 
   <script src="config.js"></script>
