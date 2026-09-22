@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#fff9f7" />
   <meta name="description" content="حكاية صغيرة معمولة مخصوص لنيرة." />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="manifest" href="manifest.webmanifest" />
   <title>A Little Birthday Story</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,6 +30,15 @@
         <p class="eyebrow" id="lock-eyebrow"></p>
         <h1 id="lock-title"></h1>
         <p class="subtitle" id="lock-subtitle"></p>
+        <div class="countdown hidden" id="countdown" aria-live="polite">
+          <span class="countdown-label" id="countdown-label">فاضل على اليوم الحلو</span>
+          <div class="countdown-grid">
+            <div><strong id="countdown-days">00</strong><small>يوم</small></div>
+            <div><strong id="countdown-hours">00</strong><small>ساعة</small></div>
+            <div><strong id="countdown-minutes">00</strong><small>دقيقة</small></div>
+            <div><strong id="countdown-seconds">00</strong><small>ثانية</small></div>
+          </div>
+        </div>
 
         <div class="pin-wrap">
           <div class="pin-slots" id="pin-slots" aria-label="تاريخ الميلاد"></div>
@@ -56,6 +69,8 @@
 <button id="sound-toggle" class="sound-toggle" type="button" aria-label="تشغيل أو إيقاف الموسيقى"><span class="sound-icon">♪</span><span class="sound-name" id="sound-name">الموسيقى</span></button>
 <div class="chapter-toast" id="chapter-toast" aria-live="polite"><span id="chapter-toast-number"></span><strong id="chapter-toast-title"></strong></div>
 <div class="unlock-transition" id="unlock-transition" aria-hidden="true"><span>♥</span></div>
+<div class="celebration-layer" id="celebration-layer" aria-hidden="true"></div>
+<div class="music-fallback hidden" id="music-fallback"><span>♪</span><p>الموسيقى مستنية لمسة صغيرة.</p><button type="button" id="music-fallback-button">شغّليها ♫</button></div>
 
       <header class="hero" data-section="hero">
         <div class="hero-glow"></div>
@@ -164,7 +179,7 @@
           <h3 class="final-title" id="final-title"><span id="final-title-text"></span><span class="final-title-heart" aria-hidden="true">♡</span></h3>
           <p id="final-message"></p>
           <div class="signature" id="signature"></div>
-          <button class="replay-button" id="replay-button" type="button"></button>
+          <div class="final-actions"><button class="memory-button" id="memory-button" type="button">♡ احفظي اللحظة</button><button class="replay-button" id="replay-button" type="button"></button></div>
         </div>
       </section>
     </section>
