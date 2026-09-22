@@ -41,7 +41,7 @@
   $("#hearts-copy").textContent = cfg.hearts.copy;
 
   $("#final-eyebrow").textContent = cfg.final.eyebrow;
-  $("#final-title").textContent = cfg.final.title;
+  $("#final-title-text").textContent = cfg.final.title;
   $("#final-message").textContent = cfg.final.message;
   $("#signature").textContent = cfg.final.signature;
   $("#replay-button").textContent = cfg.final.button;
