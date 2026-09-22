@@ -45,7 +45,17 @@
         <span id="progress-bar"></span>
       </div>
 
-      <button id="sound-toggle" class="sound-toggle" type="button" aria-label="تشغيل أو إيقاف الموسيقى"><span class="sound-icon">♪</span><span class="sound-name" id="sound-name">الموسيقى</span></button>
+      <div class="story-progress" id="story-progress" aria-label="تقدم الحكاية">
+  <button type="button" data-story-target="intro" aria-label="البداية"></button>
+  <button type="button" data-story-target="scratch" aria-label="الأسرار"></button>
+  <button type="button" data-story-target="letters" aria-label="الجوابات"></button>
+  <button type="button" data-story-target="photos" aria-label="الذكريات"></button>
+  <button type="button" data-story-target="hearts" aria-label="القلوب"></button>
+  <button type="button" data-story-target="final" aria-label="النهاية"></button>
+</div>
+<button id="sound-toggle" class="sound-toggle" type="button" aria-label="تشغيل أو إيقاف الموسيقى"><span class="sound-icon">♪</span><span class="sound-name" id="sound-name">الموسيقى</span></button>
+<div class="chapter-toast" id="chapter-toast" aria-live="polite"><span id="chapter-toast-number"></span><strong id="chapter-toast-title"></strong></div>
+<div class="unlock-transition" id="unlock-transition" aria-hidden="true"><span>♥</span></div>
 
       <header class="hero" data-section="hero">
         <div class="hero-glow"></div>
