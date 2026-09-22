@@ -193,6 +193,7 @@
     $("#recipient-name").textContent = cfg.recipientName;
     buildScratchCards();
     buildLetters();
+    buildPhotos();
     buildHeartField();
     createFloatingHearts();
     setupIntroButton();
@@ -200,6 +201,46 @@
     setupSoundButton();
     setupRevealAnimations();
     setupAmbientParallax();
+  }
+
+
+  function buildPhotos() {
+    const title = $("#photos-title");
+    const copy = $("#photos-copy");
+    const grid = $("#photos-grid");
+    const photos = cfg.photos;
+    if (!photos) return;
+    title.textContent = photos.title || "ذكريات صغيرة";
+    copy.textContent = photos.copy || "";
+    grid.innerHTML = "";
+    (photos.items || []).forEach((photo, index) => {
+      const card = document.createElement("article");
+      card.className = "photo-card";
+      const hasImage = Boolean(photo.image && String(photo.image).trim());
+      if (hasImage) {
+        const img = document.createElement("img");
+        img.className = "photo-image";
+        img.src = String(photo.image);
+        img.alt = photo.title || ("ذكرى " + (index + 1));
+        img.loading = "lazy";
+        img.decoding = "async";
+        card.appendChild(img);
+      } else {
+        const placeholder = document.createElement("div");
+        placeholder.className = "photo-placeholder";
+        placeholder.innerHTML = '<div><span>♡</span><p>ضيفي الصورة هنا</p></div>';
+        card.appendChild(placeholder);
+      }
+      const caption = document.createElement("div");
+      caption.className = "photo-caption";
+      const strong = document.createElement("strong");
+      strong.textContent = photo.title || ("ذكرى " + (index + 1));
+      const small = document.createElement("small");
+      small.textContent = photo.caption || "";
+      caption.append(strong, small);
+      card.appendChild(caption);
+      grid.appendChild(card);
+    });
   }
 
   // ---------- SCRATCH CARDS ----------
