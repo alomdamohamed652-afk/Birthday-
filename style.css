@@ -1109,3 +1109,39 @@ body::-webkit-scrollbar-thumb { background: linear-gradient(180deg, rgba(201,127
   .final-card h3 { font-size: clamp(34px, 10.2vw, 50px); }
   .big-heart { font-size: 54px; }
 }
+
+/* ---------- FINAL MOMENT POLISH ---------- */
+.final-section.final-arrived .final-card {
+  animation: finalReveal 1.15s var(--ease-smooth) both;
+}
+.final-section.final-arrived .big-heart {
+  animation: finalHeartReveal 1.4s var(--ease-smooth) .18s both, finalPulse 2.5s ease-in-out 1.6s infinite;
+}
+@keyframes finalReveal {
+  from { opacity:0; transform:translateY(28px) scale(.97); filter:blur(5px); }
+  to { opacity:1; transform:none; filter:none; }
+}
+@keyframes finalHeartReveal {
+  0% { transform:scale(.55); opacity:0; }
+  55% { transform:scale(1.2); opacity:1; }
+  100% { transform:scale(1); opacity:1; }
+}
+.candle.blown {
+  transform:translateY(2px);
+}
+.candle.blown::after {
+  content:"";
+  position:absolute;
+  left:50%;
+  top:-18px;
+  width:5px;
+  height:18px;
+  transform:translateX(-50%);
+  border-radius:50%;
+  background:rgba(170,105,120,.16);
+  filter:blur(2px);
+  animation:smokeRise 1.3s ease-out both;
+}
+@keyframes smokeRise {
+  to { transform:translate(-50%,-22px) scale(2); opacity:0; }
+}
