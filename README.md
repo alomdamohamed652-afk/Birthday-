@@ -61,3 +61,33 @@ Keyboard controls, focus states, reduced-motion support, semantic controls, and 
 ## 🔒 Important
 
 The birthday is stored in frontend JavaScript. It is a fun surprise gate, not real security.
+
+
+## ⏳ Birthday countdown
+
+The lock screen can show a live countdown to the next birthday. Configure it from `site.countdown`.
+
+## 🎉 Celebrations
+
+Gift and candle moments trigger lightweight confetti/spark effects. Configure particle count from `site.celebration`.
+
+## 📸 Photo album
+
+Photo items support:
+- `date`
+- `caption`
+- `focus` → CSS `object-position`, e.g. `"top center"`
+
+The album now uses a larger first memory, varied heights, subtle polaroid rotation, stronger captions, and a single-column mobile layout.
+
+## 🖼️ Keepsake
+
+The final screen includes **احفظي اللحظة**. It creates a personalized PNG memory card and uses the native share sheet when file sharing is supported; otherwise it downloads the image.
+
+## 📱 PWA / Offline
+
+The project includes a web app manifest, app icon, and service worker. When served over HTTPS (or localhost), supported browsers can install it as a standalone app. Core local assets are cached for offline reopening; the remote music file is intentionally left network-only.
+
+## 🧹 Repository
+
+A `.gitignore` is included for editor, OS, dependency, build, and temporary files.
