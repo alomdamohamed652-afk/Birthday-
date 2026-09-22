@@ -13,11 +13,11 @@
 */
 
 window.BIRTHDAY_CONFIG = {
-  recipientName: "Jori",
+  recipientName: "نيرة",
   birthday: "14022004",
 
   site: {
-    title: "A Little Birthday Story",
+    title: "حكاية صغيرة لنيرة",
     accent: "#c97f91",
 
     music: {
@@ -26,7 +26,7 @@ window.BIRTHDAY_CONFIG = {
       // Replace this with your direct .mp3 / .ogg / .wav URL.
       // Example:
       // url: "https://example.com/birthday-song.mp3"
-      url: "",
+      url: "https://raw.githubusercontent.com/alomdamohamed652-afk/Birthday-/main/%D8%B7%D8%A8_%D8%A8_%D8%A8%D8%AD%D8%A8%D9%83___%D8%A7%D9%84%D8%B9%D9%8A%D9%88%D9%86_%D8%A7%D9%84%D8%AD%D9%84%D9%88%D9%87_%D8%AF%D9%8A_-_%D9%85%D8%B4_%D9%84%D8%A7%D9%82%D9%8A_%D8%AD%D8%A7%D8%AC%D9%87_%D9%81_%D8%A7%D9%84%D9%88%D8%AC%D9%88%D8%AF___-_%D8%AD%D9%85%D9%88_%D8%A7%D9%84%D9%85%D8%B1%D8%B4%D8%AF%D9%8A_-_%D8%AA%D9%88%D8%B2%D9%8A%D8%B9__%D9%88%D8%B2%D9%87_%D9%85%D9%86%D8%AA%D8%B5%D8%B1(256k).mp3",
 
       loop: true,
       volume: 0.35
@@ -34,80 +34,80 @@ window.BIRTHDAY_CONFIG = {
   },
 
   lockScreen: {
-    eyebrow: "A SPECIAL DELIVERY",
-    title: "Something special<br>is waiting for you.",
-    subtitle: "A little corner of the internet was made just for you.",
-    hint: "ENTER YOUR BIRTHDAY",
-    wrongDateMessage: "Hmm... that's not the birthday I was looking for. ♡"
+    eyebrow: "هدية خاصة لنيرة",
+    title: "في حاجة حلوة<br>مستنياكي هنا.",
+    subtitle: "ركن صغير من الإنترنت اتعمل مخصوص علشانك.",
+    hint: "اكتبي تاريخ ميلادك",
+    wrongDateMessage: "مممم... ده مش التاريخ اللي بدور عليه ♡"
   },
 
   hero: {
-    eyebrow: "A LITTLE SOMETHING FOR YOU",
-    titlePrefix: "Happy Birthday,",
-    scrollText: "SCROLL TO BEGIN · ♥"
+    eyebrow: "حاجة صغيرة علشانك",
+    titlePrefix: "كل سنة وإنتِ طيبة يا",
+    scrollText: "انزلي لتبدأ الحكاية · ♥"
   },
 
   intro: {
-    eyebrow: "01 · A LITTLE BEGINNING",
-    title: "Before you open everything...",
-    text: "I wanted to make something a little different this year — a tiny place filled with words, little surprises, and a few things made especially for you.",
-    button: "Keep going ↓"
+    eyebrow: "01 · بداية صغيرة",
+    title: "قبل ما تفتحي كل حاجة...",
+    text: "كنت عايز أعمل حاجة مختلفة شوية السنة دي — مكان صغير مليان كلام حلو، مفاجآت بسيطة، وحاجات معمولة مخصوص علشانك.",
+    button: "كمّلي ↓"
   },
 
   scratch: {
-    eyebrow: "02 · LITTLE SECRETS",
-    title: "Scratch to reveal",
-    copy: "Use your finger on your phone or your mouse on a computer. Take your time — there is something underneath every card.",
+    eyebrow: "02 · أسرار صغيرة",
+    title: "اكشطي واكتشفي",
+    copy: "استخدمي صباعك على الموبايل أو الماوس على الكمبيوتر. خدي وقتك... تحت كل كارت حاجة مستنياكي.",
     cards: [
-      { title: "A tiny secret", reveal: "You make ordinary days feel a little less ordinary. ♡" },
-      { title: "Keep this one", reveal: "Some people leave memories. Some people become one." },
-      { title: "A little wish", reveal: "I hope this new year gives you countless reasons to smile." },
-      { title: "You found it", reveal: "One extra birthday wish, because apparently one is never enough. ✨" }
+      { title: "سر صغير", reveal: "إنتِ بتخلي الأيام العادية أحلى شوية من غير ما تحسي. ♡" },
+      { title: "خلي دي معاكي", reveal: "في ناس بتعدّي وتسيب ذكرى... وفي ناس هي نفسها بتبقى ذكرى حلوة." },
+      { title: "أمنية صغيرة", reveal: "أتمنى سنتك الجديدة تكون مليانة أسباب كتير تخليكي تبتسمي." },
+      { title: "لقيتيها", reveal: "أمنية زيادة ليكي... أصل أمنية واحدة عمرها ما تكفي. ✨" }
     ]
   },
 
   letters: {
-    eyebrow: "03 · YOU HAVE MAIL",
-    title: "A few little letters",
-    copy: "Some things are nicer when they arrive slowly.",
+    eyebrow: "03 · عندك جواب",
+    title: "كام جواب صغير",
+    copy: "في حاجات بتبقى أحلى لما نوصلها واحدة واحدة.",
     cards: [
       {
-        label: "LETTER 01",
-        title: "For your birthday",
-        message: "Happy birthday. I hope today feels soft, peaceful, and full of little moments that make you genuinely happy."
+        label: "الجواب الأول",
+        title: "في يوم ميلادك",
+        message: "كل سنة وإنتِ طيبة يا نيرة. أتمنى يومك يبقى هادي وجميل، ومليان لحظات صغيرة تفرح قلبك بجد."
       },
       {
-        label: "LETTER 02",
-        title: "A little reminder",
-        message: "Whatever this next chapter brings, I hope you remember that you deserve good things, good people, and plenty of reasons to laugh."
+        label: "الجواب الثاني",
+        title: "مجرد تذكير",
+        message: "افتكري دايمًا إنك تستحقي حاجات حلوة، وناس حلوة، وأيام كتير تضحكي فيها من قلبك."
       },
       {
-        label: "LETTER 03",
-        title: "For the year ahead",
-        message: "May this year surprise you in the nicest ways — new memories, new adventures, and moments you'll want to keep forever."
+        label: "الجواب الثالث",
+        title: "للسنة اللي جاية",
+        message: "يارب السنة دي تفاجئك بأحلى الطرق: ذكريات جديدة، مغامرات حلوة، ولحظات تتمني تفضلي فاكرها على طول."
       }
     ]
   },
 
   hearts: {
-    eyebrow: "04 · FIND THE HEARTS",
-    title: "A few are hiding here...",
-    copy: "Tap the little hearts. Each one has a tiny message waiting for you.",
+    eyebrow: "04 · دوري على القلوب",
+    title: "في شوية قلوب مستخبيين هنا...",
+    copy: "دوسي على القلوب الصغيرة... كل قلب مستخبي جواه رسالة ليكي.",
     messages: [
-      "You found a little heart. ♡",
-      "A tiny reminder: smile today.",
-      "Another little wish for you. ✨",
-      "This one was hiding for you.",
-      "Keep this one. ♥",
-      "One more reason to smile."
+      "لقيتي قلب صغير مخصوص ليكي. ♡",
+      "مجرد تذكير صغير: ابتسمي النهارده.",
+      "أمنية صغيرة كمان علشانك. ✨",
+      "القلب ده كان مستخبي مستنيكي.",
+      "خلي القلب ده معاكي. ♥",
+      "سبب جديد يخليكي تبتسمي."
     ]
   },
 
   final: {
-    eyebrow: "THE LAST ONE",
-    title: "Happy Birthday, Jori ♡",
-    message: "This little website is just a small way of saying: I hope your birthday is beautiful, and I hope the year ahead is even more beautiful.",
-    signature: "With love, Someone who cares",
-    button: "Replay the beginning ↺"
+    eyebrow: "الأخيرة",
+    title: "كل سنة وإنتِ طيبة يا نيرة ♡",
+    message: "الموقع ده مجرد طريقة صغيرة أقولك بيها: كل سنة وإنتِ طيبة، ويا رب سنتك الجديدة تكون أجمل بكتير مما تتمني.",
+    signature: "من حد بيتمنى لكِ الخير دايمًا ♡",
+    button: "نبدأ الحكاية من الأول ↺"
   }
 };
