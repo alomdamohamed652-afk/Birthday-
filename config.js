@@ -1,14 +1,15 @@
 /*
   💗 BIRTHDAY CONFIG
   ------------------
-  You can personalize almost the entire website from this file.
+  Edit this file to personalize the website.
 
   birthday = DDMMYYYY
   Example: "14022004" = 14 / 02 / 2004
 
-  NOTE:
-  This is a fun birthday gate, NOT real security. The value is visible
-  to anyone who can inspect the website files.
+  Music:
+  Put a direct audio URL in music.url and set enabled to true.
+  When the correct birthday is entered, the site attempts to start
+  the music immediately from that user interaction.
 */
 
 window.BIRTHDAY_CONFIG = {
@@ -18,9 +19,17 @@ window.BIRTHDAY_CONFIG = {
   site: {
     title: "A Little Birthday Story",
     accent: "#c97f91",
+
     music: {
-      enabled: false,
-      url: ""
+      enabled: true,
+
+      // Replace this with your direct .mp3 / .ogg / .wav URL.
+      // Example:
+      // url: "https://example.com/birthday-song.mp3"
+      url: "",
+
+      loop: true,
+      volume: 0.35
     }
   },
 
