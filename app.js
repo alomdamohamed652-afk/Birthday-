@@ -15,6 +15,8 @@
   let foundHearts = 0;
   let audio = null;
   let audioFadeTimer = null;
+  let experienceBuilt = false;
+  let audioContext = null;
 
   document.title = cfg.site?.title || "A Little Birthday Story";
 
@@ -197,15 +199,21 @@
   // ---------- BUILD EXPERIENCE ----------
   function buildBirthday() {
     $("#recipient-name").textContent = cfg.recipientName;
+
+    // Rebuild the interactive content on replay without stacking global listeners.
     buildScratchCards();
     buildLetters();
     buildPhotos();
     buildHeartField();
     createFloatingHearts();
+    setupRevealAnimations();
+
+    if (experienceBuilt) return;
+
+    experienceBuilt = true;
     setupIntroButton();
     setupReplay();
     setupSoundButton();
-    setupRevealAnimations();
     setupAmbientParallax();
     setupStoryMode();
   }
@@ -382,6 +390,7 @@
       if (ratio >= .42) {
         wrapper.classList.add("revealed");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        playFx("scratch");
         burst(wrapper);
       }
     }
@@ -433,6 +442,41 @@
     }
   }
 
+  // ---------- MICRO SOUND FX ----------
+
+  function playFx(type) {
+    const settings = cfg.site?.soundEffects;
+    if (!settings?.enabled || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    try {
+      audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+      const now = audioContext.currentTime;
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      const volume = typeof settings.volume === "number" ? settings.volume : 0.045;
+      const tones = {
+        scratch: [420, 620],
+        letter: [520, 760],
+        gift: [360, 680],
+        candle: [620, 880]
+      };
+      const [from, to] = tones[type] || tones.letter;
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(from, now);
+      osc.frequency.exponentialRampToValueAtTime(to, now + .12);
+      gain.gain.setValueAtTime(.0001, now);
+      gain.gain.exponentialRampToValueAtTime(volume, now + .012);
+      gain.gain.exponentialRampToValueAtTime(.0001, now + .18);
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
+      osc.start(now);
+      osc.stop(now + .2);
+    } catch (_) {
+      // Sound effects are decorative; never let them break the experience.
+    }
+  }
+
   // ---------- LETTERS ----------
   function buildLetters() {
     const grid = $("#letters-grid");
@@ -453,7 +497,10 @@
         <small>OPEN ME · ♡</small>
       `;
 
-      button.addEventListener("click", () => openLetter(letter, button));
+      button.addEventListener("click", () => {
+        playFx("letter");
+        openLetter(letter, button);
+      });
       grid.appendChild(button);
     });
   }
@@ -677,6 +724,8 @@
   }
 
   function openSurprise() {
+    if ($("#gift-box").classList.contains("opened")) return;
+    playFx("gift");
     $("#gift-box").classList.add("opened");
     $("#surprise-button").classList.add("hidden");
     $("#surprise-title").textContent = "عندي حاجة أخيرة ليكي 🎁";
@@ -703,12 +752,15 @@
     const candle = $("#candle");
     if (candle.classList.contains("blown")) return;
     candle.classList.add("blown");
+    playFx("candle");
     $("#candle-hint").textContent = "الأمنية اتقالت... ✨";
     $("#cake-wrap").classList.add("celebrate");
     burst($("#cake-wrap"));
 
     window.setTimeout(() => {
-      document.querySelector(".final-section")?.scrollIntoView({
+      const finalSection = document.querySelector(".final-section");
+      finalSection?.classList.add("final-arrived");
+      finalSection?.scrollIntoView({
         behavior: "smooth",
         block: "start"
       });
@@ -770,6 +822,18 @@
       $("#candle").classList.remove("blown");
       $("#candle-hint").textContent = "دوسي على الشمعة ✨";
       $("#cake-wrap").classList.remove("celebrate");
+      document.querySelector(".final-section")?.classList.remove("final-arrived");
+
+      buildScratchCards();
+      buildLetters();
+      buildPhotos();
+      buildHeartField();
+      createFloatingHearts();
+      setupRevealAnimations();
+      $("#sound-toggle").classList.remove("playing");
+      $("#sound-toggle .sound-icon").textContent = "♪";
+      $("#sound-toggle .sound-name").textContent = "الموسيقى";
+      $("#sound-toggle").title = "تشغيل الموسيقى";
 
       renderSlots();
       window.scrollTo({ top: 0, behavior: "instant" });
@@ -800,8 +864,9 @@
       } else {
         audio.pause();
         toggle.classList.remove("playing");
-        toggle.textContent = "♪";
-        toggle.title = "Play music";
+        toggle.querySelector(".sound-icon").textContent = "♪";
+        toggle.querySelector(".sound-name").textContent = "الموسيقى";
+        toggle.title = "تشغيل الموسيقى";
       }
     }, { once: false });
   }
