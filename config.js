@@ -30,6 +30,11 @@ window.BIRTHDAY_CONFIG = {
 
       loop: true,
       volume: 0.35
+    },
+
+    soundEffects: {
+      enabled: true,
+      volume: 0.045
     }
   },
 
