@@ -131,6 +131,10 @@
     startMusic();
 
     lock.classList.add("exit");
+    const transition = $("#unlock-transition");
+    transition.classList.remove("play");
+    void transition.offsetWidth;
+    transition.classList.add("play");
 
     window.setTimeout(() => {
       lock.classList.add("hidden");
@@ -178,7 +182,7 @@
       toggle.classList.add("playing");
       toggle.querySelector(".sound-icon").textContent = "♫";
       toggle.querySelector(".sound-name").textContent = "تشغيل";
-      toggle.title = "Pause music";
+      toggle.title = "إيقاف الموسيقى";
     }).catch(() => {
       // Some browsers can still block playback. The visible button remains available.
       toggle.classList.remove("disabled");
@@ -203,6 +207,7 @@
     setupSoundButton();
     setupRevealAnimations();
     setupAmbientParallax();
+    setupStoryMode();
   }
 
 
@@ -504,7 +509,8 @@
 
         if (foundHearts === messages.length) {
           window.setTimeout(() => {
-            showHeartToast("You found them all. One final surprise is waiting below. ♥");
+            showHeartToast("لقيتيهم كلهم... عندك مفاجأة أخيرة تحت. ♥");
+            showFinalSurprise();
           }, 900);
         }
       });
@@ -526,6 +532,61 @@
       toast.classList.remove("show");
       window.setTimeout(() => toast.classList.add("hidden"), 350);
     }, 2700);
+  }
+
+  // ---------- STORY MODE ----------
+
+  function setupStoryMode() {
+    const progress = $("#story-progress");
+    const dots = [...progress.querySelectorAll("button")];
+    const sections = [...document.querySelectorAll("[data-section]")];
+    const toast = $("#chapter-toast");
+    const toastNumber = $("#chapter-toast-number");
+    const toastTitle = $("#chapter-toast-title");
+
+    const titles = {
+      intro: "بداية صغيرة",
+      scratch: "أسرار صغيرة",
+      letters: "جوابات ليكي",
+      photos: "ذكريات",
+      hearts: "دوري على القلوب",
+      final: "الأخيرة"
+    };
+
+    const activate = (id, announce = false) => {
+      dots.forEach((dot) => dot.classList.toggle("active", dot.dataset.storyTarget === id));
+      if (!announce || !titles[id]) return;
+
+      const index = dots.findIndex((dot) => dot.dataset.storyTarget === id);
+      toastNumber.textContent = String(index + 1).padStart(2, "0");
+      toastTitle.textContent = titles[id];
+      toast.classList.remove("show");
+      void toast.offsetWidth;
+      toast.classList.add("show");
+      window.clearTimeout(setupStoryMode.toastTimer);
+      setupStoryMode.toastTimer = window.setTimeout(() => toast.classList.remove("show"), 1500);
+    };
+
+    dots.forEach((dot) => {
+      dot.addEventListener("click", () => {
+        const target = document.querySelector('[data-section="' + dot.dataset.storyTarget + '"]');
+        target?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+
+    if (!("IntersectionObserver" in window)) {
+      activate("intro");
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) activate(entry.target.dataset.section, true);
+      });
+    }, { threshold: 0.45 });
+
+    sections.forEach((section) => observer.observe(section));
+    activate("intro");
   }
 
   // ---------- PHOTO VIEWER + FINAL SURPRISE ----------
