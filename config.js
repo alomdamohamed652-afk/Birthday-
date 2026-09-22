@@ -35,6 +35,22 @@ window.BIRTHDAY_CONFIG = {
     soundEffects: {
       enabled: true,
       volume: 0.045
+    },
+
+    countdown: {
+      enabled: true,
+      label: "فاضل على اليوم الحلو"
+    },
+
+    celebration: {
+      enabled: true,
+      particles: 72
+    },
+
+    keepsake: {
+      enabled: true,
+      button: "♡ احفظي اللحظة",
+      filename: "naira-birthday-memory.png"
     }
   },
 
@@ -99,10 +115,10 @@ window.BIRTHDAY_CONFIG = {
     title: "صور تستاهل مكان هنا",
     copy: "حطي الصور اللي ليها معنى عندك. على الموبايل هتظهر كأنها ألبوم صغير، وكل صورة ليها حكايتها.",
     items: [
-      { image: "", title: "صورة أولى", date: "", caption: "حطي الصورة هنا لما تكوني جاهزة. ♡" },
-      { image: "", title: "لحظة حلوة", date: "", caption: "صورة تفضل فاكرة بيها اليوم ده." },
-      { image: "", title: "ذكرى صغيرة", date: "", caption: "تفصيلة بسيطة، بس تستاهل تتحفظ." },
-      { image: "", title: "صورة أخيرة", date: "", caption: "مكان لصورة ليها معنى خاص. ♥" }
+      { image: "", title: "صورة أولى", date: "", focus: "center center", caption: "حطي الصورة هنا لما تكوني جاهزة. ♡" },
+      { image: "", title: "لحظة حلوة", date: "", focus: "center center", caption: "صورة تفضل فاكرة بيها اليوم ده." },
+      { image: "", title: "ذكرى صغيرة", date: "", focus: "center center", caption: "تفصيلة بسيطة، بس تستاهل تتحفظ." },
+      { image: "", title: "صورة أخيرة", date: "", focus: "center center", caption: "مكان لصورة ليها معنى خاص. ♥" }
     ]
   },
 
