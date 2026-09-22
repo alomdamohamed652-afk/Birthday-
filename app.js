@@ -3,7 +3,6 @@
 
   const cfg = window.BIRTHDAY_CONFIG;
   const $ = (selector) => document.querySelector(selector);
-  const $$ = (selector) => [...document.querySelectorAll(selector)];
 
   const lock = $("#lock-screen");
   const birthday = $("#birthday-screen");
@@ -16,7 +15,6 @@
   let foundHearts = 0;
   let audio = null;
 
-  // ---------- INITIAL CONTENT ----------
   document.title = cfg.site?.title || "A Little Birthday Story";
 
   $("#lock-eyebrow").textContent = cfg.lockScreen.eyebrow;
@@ -47,20 +45,25 @@
   $("#signature").textContent = cfg.final.signature;
   $("#replay-button").textContent = cfg.final.button;
 
-  // ---------- PIN INPUT ----------
+  // ---------- PIN ----------
   function renderSlots() {
     pinSlots.innerHTML = "";
+
     for (let i = 0; i < 8; i += 1) {
       const slot = document.createElement("div");
       slot.className = "pin-slot" + (i < entered.length ? " filled" : "");
+
+      // Filled digits are represented by hearts instead of dots.
       slot.innerHTML = i < entered.length
-        ? '<span class="pin-dot">●</span>'
-        : '<span class="pin-empty"></span>';
+        ? '<span class="pin-heart" aria-hidden="true">♥</span>'
+        : '<span class="pin-empty" aria-hidden="true"></span>';
+
       pinSlots.appendChild(slot);
     }
   }
 
   const keys = ["1","2","3","4","5","6","7","8","9","clear","0","back"];
+
   keys.forEach((key) => {
     const button = document.createElement("button");
     button.type = "button";
@@ -73,16 +76,22 @@
 
   function pressKey(key) {
     if (unlocked) return;
+
     pinError.textContent = "";
 
-    if (key === "clear") entered = "";
-    else if (key === "back") entered = entered.slice(0, -1);
-    else if (entered.length < 8) entered += key;
+    if (key === "clear") {
+      entered = "";
+    } else if (key === "back") {
+      entered = entered.slice(0, -1);
+    } else if (entered.length < 8) {
+      entered += key;
+    }
 
     renderSlots();
 
     if (entered.length === 8) {
-      window.setTimeout(checkBirthday, 180);
+      // Give the final heart a moment to appear before checking.
+      window.setTimeout(checkBirthday, 280);
     }
   }
 
@@ -111,9 +120,14 @@
     }, 650);
   }
 
+  // ---------- UNLOCK + MUSIC ----------
   function unlock() {
     if (unlocked) return;
     unlocked = true;
+
+    // Start music from the same user gesture that entered the final PIN.
+    // Browsers generally allow this because the PIN click/key event is a user gesture.
+    startMusic();
 
     lock.classList.add("exit");
 
@@ -124,11 +138,41 @@
       document.body.classList.add("unlocked");
 
       buildBirthday();
+
       requestAnimationFrame(() => {
         window.scrollTo({ top: 0, behavior: "instant" });
         setupProgress();
       });
     }, 600);
+  }
+
+  function startMusic() {
+    const toggle = $("#sound-toggle");
+    const music = cfg.site?.music;
+
+    if (!music?.enabled || !music.url) {
+      toggle.classList.add("disabled");
+      toggle.title = "Add a music URL in config.js";
+      return;
+    }
+
+    if (!audio) {
+      audio = new Audio(music.url);
+      audio.loop = music.loop !== false;
+      audio.volume = typeof music.volume === "number" ? music.volume : 0.35;
+      audio.preload = "auto";
+    }
+
+    audio.play().then(() => {
+      toggle.classList.add("playing");
+      toggle.textContent = "♫";
+      toggle.title = "Pause music";
+    }).catch(() => {
+      // Some browsers can still block playback. The visible button remains available.
+      toggle.classList.remove("disabled");
+      toggle.title = "Play music";
+      toggle.textContent = "♪";
+    });
   }
 
   renderSlots();
@@ -142,7 +186,7 @@
     createFloatingHearts();
     setupIntroButton();
     setupReplay();
-    setupSound();
+    setupSoundButton();
   }
 
   // ---------- SCRATCH CARDS ----------
@@ -153,6 +197,7 @@
     cfg.scratch.cards.forEach((card, index) => {
       const wrapper = document.createElement("article");
       wrapper.className = "scratch-card";
+
       wrapper.innerHTML = `
         <div class="scratch-content">
           <div class="scratch-number">0${index + 1}</div>
@@ -187,12 +232,11 @@
 
       const gradient = ctx.createLinearGradient(0, 0, rect.width, rect.height);
       gradient.addColorStop(0, "#e8c4cd");
-      gradient.addColorStop(0.5, "#f0d7dd");
+      gradient.addColorStop(.5, "#f0d7dd");
       gradient.addColorStop(1, "#dfb8c2");
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, rect.width, rect.height);
 
-      // Soft paper-like dots.
       ctx.fillStyle = "rgba(255,255,255,.35)";
       for (let x = -20; x < rect.width + 20; x += 18) {
         for (let y = 8; y < rect.height; y += 18) {
@@ -205,7 +249,6 @@
       ctx.fillStyle = "#a66b79";
       ctx.font = "600 11px DM Sans, sans-serif";
       ctx.textAlign = "center";
-      ctx.letterSpacing = "1px";
       ctx.fillText("SCRATCH TO REVEAL", rect.width / 2, rect.height / 2 - 2);
       ctx.font = "22px serif";
       ctx.fillText("♡", rect.width / 2, rect.height / 2 + 29);
@@ -213,10 +256,7 @@
 
     function point(event) {
       const rect = canvas.getBoundingClientRect();
-      return {
-        x: event.clientX - rect.left,
-        y: event.clientY - rect.top
-      };
+      return { x: event.clientX - rect.left, y: event.clientY - rect.top };
     }
 
     function scratch(event) {
@@ -243,13 +283,13 @@
       const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
       let transparent = 0;
 
-      // Sampling keeps the interaction fast on phones.
       for (let i = 3; i < data.length; i += 32) {
         if (data[i] < 60) transparent += 1;
       }
 
       const ratio = transparent / (data.length / 32);
-      if (ratio >= 0.42) {
+
+      if (ratio >= .42) {
         wrapper.classList.add("revealed");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         burst(wrapper);
@@ -288,14 +328,14 @@
       const particle = document.createElement("span");
       particle.className = "burst-heart";
       particle.textContent = i % 2 ? "♡" : "♥";
-      particle.style.setProperty("--x", `${(Math.random() - 0.5) * 150}px`);
-      particle.style.setProperty("--y", `${(Math.random() - 0.5) * 120}px`);
+      particle.style.setProperty("--x", `${(Math.random() - .5) * 150}px`);
+      particle.style.setProperty("--y", `${(Math.random() - .5) * 120}px`);
       element.appendChild(particle);
       window.setTimeout(() => particle.remove(), 850);
     }
   }
 
-  // ---------- LETTERS / ENVELOPES ----------
+  // ---------- LETTERS ----------
   function buildLetters() {
     const grid = $("#letters-grid");
     grid.innerHTML = "";
@@ -304,6 +344,7 @@
       const button = document.createElement("button");
       button.className = "letter-card";
       button.type = "button";
+
       button.innerHTML = `
         <span class="letter-envelope">
           <span class="envelope-flap"></span>
@@ -313,6 +354,7 @@
         <strong>${escapeHTML(letter.label)}</strong>
         <small>OPEN ME · ♡</small>
       `;
+
       button.addEventListener("click", () => openLetter(letter, button));
       grid.appendChild(button);
     });
@@ -328,8 +370,7 @@
   }
 
   document.addEventListener("click", (event) => {
-    if (!event.target.closest("[data-close]")) return;
-    closeLetter();
+    if (event.target.closest("[data-close]")) closeLetter();
   });
 
   document.addEventListener("keydown", (event) => {
@@ -356,7 +397,7 @@
       heart.className = "memory-heart";
       heart.type = "button";
       heart.setAttribute("aria-label", "Find hidden heart");
-      heart.style.setProperty("--delay", `${index * 0.18}s`);
+      heart.style.setProperty("--delay", `${index * .18}s`);
       heart.style.setProperty("--x", `${8 + ((index * 19) % 82)}%`);
       heart.style.setProperty("--y", `${10 + ((index * 31) % 74)}%`);
       heart.textContent = index % 2 ? "♡" : "♥";
@@ -369,7 +410,9 @@
         showHeartToast(message);
 
         if (foundHearts === messages.length) {
-          window.setTimeout(() => showHeartToast("You found them all. One final surprise is waiting below. ♥"), 900);
+          window.setTimeout(() => {
+            showHeartToast("You found them all. One final surprise is waiting below. ♥");
+          }, 900);
         }
       });
 
@@ -380,8 +423,8 @@
   function showHeartToast(message) {
     const toast = $("#heart-toast");
     $("#heart-toast-message").textContent = message;
-    toast.classList.remove("hidden");
-    toast.classList.remove("show");
+
+    toast.classList.remove("hidden", "show");
     void toast.offsetWidth;
     toast.classList.add("show");
 
@@ -409,27 +452,35 @@
     }
   }
 
-  // ---------- SMALL UX ----------
+  // ---------- UX ----------
   function setupIntroButton() {
     $("#intro-button").addEventListener("click", () => {
-      document.querySelector(".scratch-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      document.querySelector(".scratch-section")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
     }, { once: true });
   }
 
   function setupReplay() {
     $("#replay-button").addEventListener("click", () => {
       closeLetter();
+
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+
       birthday.classList.add("hidden");
       lock.classList.remove("hidden", "exit");
-      lock.classList.remove("exit");
       unlocked = false;
       entered = "";
       renderSlots();
       window.scrollTo({ top: 0, behavior: "instant" });
-    });
+    }, { once: true });
   }
 
-  function setupSound() {
+  function setupSoundButton() {
     const toggle = $("#sound-toggle");
     const music = cfg.site?.music;
 
@@ -439,29 +490,30 @@
       return;
     }
 
-    audio = new Audio(music.url);
-    audio.loop = true;
-    audio.volume = 0.35;
+    toggle.classList.remove("disabled");
+    toggle.title = audio && !audio.paused ? "Pause music" : "Play music";
 
     toggle.addEventListener("click", () => {
+      if (!audio) {
+        startMusic();
+        return;
+      }
+
       if (audio.paused) {
-        audio.play().then(() => {
-          toggle.classList.add("playing");
-          toggle.textContent = "♫";
-        }).catch(() => {
-          showHeartToast("Tap again after allowing audio. ♡");
-        });
+        startMusic();
       } else {
         audio.pause();
         toggle.classList.remove("playing");
         toggle.textContent = "♪";
+        toggle.title = "Play music";
       }
-    });
+    }, { once: false });
   }
 
   // ---------- SCROLL PROGRESS ----------
   function setupProgress() {
     const bar = $("#progress-bar");
+
     const update = () => {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       const progress = max > 0 ? (window.scrollY / max) * 100 : 0;
