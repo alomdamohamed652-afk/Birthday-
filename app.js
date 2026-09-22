@@ -176,13 +176,15 @@
         if (audio.volume >= target) window.clearInterval(audioFadeTimer);
       }, 45);
       toggle.classList.add("playing");
-      toggle.textContent = "♫";
+      toggle.querySelector(".sound-icon").textContent = "♫";
+      toggle.querySelector(".sound-name").textContent = "تشغيل";
       toggle.title = "Pause music";
     }).catch(() => {
       // Some browsers can still block playback. The visible button remains available.
       toggle.classList.remove("disabled");
       toggle.title = "Play music";
-      toggle.textContent = "♪";
+      toggle.querySelector(".sound-icon").textContent = "♪";
+        toggle.querySelector(".sound-name").textContent = "الموسيقى";
     });
   }
 
@@ -213,11 +215,15 @@
     title.textContent = photos.title || "ذكريات صغيرة";
     copy.textContent = photos.copy || "";
     grid.innerHTML = "";
+
     (photos.items || []).forEach((photo, index) => {
       const card = document.createElement("article");
       card.className = "photo-card";
-      const hasImage = Boolean(photo.image && String(photo.image).trim());
-      if (hasImage) {
+      card.tabIndex = 0;
+      card.setAttribute("role", "button");
+      card.setAttribute("aria-label", "فتح " + (photo.title || "الذكرى"));
+
+      if (photo.image) {
         const img = document.createElement("img");
         img.className = "photo-image";
         img.src = String(photo.image);
@@ -231,14 +237,23 @@
         placeholder.innerHTML = '<div><span>♡</span><p>ضيفي الصورة هنا</p></div>';
         card.appendChild(placeholder);
       }
+
       const caption = document.createElement("div");
       caption.className = "photo-caption";
       const strong = document.createElement("strong");
       strong.textContent = photo.title || ("ذكرى " + (index + 1));
       const small = document.createElement("small");
-      small.textContent = photo.caption || "";
+      small.textContent = [photo.date, photo.caption].filter(Boolean).join(" · ");
       caption.append(strong, small);
       card.appendChild(caption);
+
+      card.addEventListener("click", () => openPhoto(index));
+      card.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openPhoto(index);
+        }
+      });
       grid.appendChild(card);
     });
   }
@@ -489,6 +504,132 @@
     }, 2700);
   }
 
+  // ---------- PHOTO VIEWER + FINAL SURPRISE ----------
+
+  let currentPhotoIndex = 0;
+  let photoTouchStartX = null;
+
+  function openPhoto(index) {
+    const items = cfg.photos?.items || [];
+    if (!items.length) return;
+    currentPhotoIndex = Math.max(0, Math.min(index, items.length - 1));
+    renderPhotoViewer();
+    $("#photo-modal").classList.remove("hidden");
+    document.body.classList.add("modal-open");
+  }
+
+  function renderPhotoViewer() {
+    const items = cfg.photos?.items || [];
+    const photo = items[currentPhotoIndex];
+    const media = $("#photo-viewer-media");
+    media.innerHTML = "";
+
+    if (photo?.image) {
+      const img = document.createElement("img");
+      img.src = photo.image;
+      img.alt = photo.title || "ذكرى";
+      img.className = "photo-viewer-image";
+      media.appendChild(img);
+    } else {
+      const empty = document.createElement("div");
+      empty.className = "photo-viewer-empty";
+      empty.textContent = "ضيفي الصورة هنا ♡";
+      media.appendChild(empty);
+    }
+
+    $("#photo-counter").textContent = (currentPhotoIndex + 1) + " / " + items.length;
+    $("#photo-modal-title").textContent = photo?.title || "ذكرى";
+    $("#photo-modal-caption").textContent = [photo?.date, photo?.caption].filter(Boolean).join(" · ");
+  }
+
+  function closePhoto() {
+    $("#photo-modal").classList.add("hidden");
+    document.body.classList.remove("modal-open");
+  }
+
+  function movePhoto(direction) {
+    const items = cfg.photos?.items || [];
+    if (!items.length) return;
+    currentPhotoIndex = (currentPhotoIndex + direction + items.length) % items.length;
+    renderPhotoViewer();
+  }
+
+  $("#photo-prev").addEventListener("click", () => movePhoto(-1));
+  $("#photo-next").addEventListener("click", () => movePhoto(1));
+
+  document.addEventListener("click", (event) => {
+    if (event.target.closest("[data-photo-close]")) closePhoto();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closePhoto();
+      closeLetter();
+    }
+    if (!$("#photo-modal").classList.contains("hidden")) {
+      if (event.key === "ArrowLeft") movePhoto(1);
+      if (event.key === "ArrowRight") movePhoto(-1);
+    }
+  });
+
+  $("#photo-viewer-media").addEventListener("touchstart", (event) => {
+    photoTouchStartX = event.changedTouches[0].clientX;
+  }, { passive: true });
+
+  $("#photo-viewer-media").addEventListener("touchend", (event) => {
+    if (photoTouchStartX === null) return;
+    const delta = event.changedTouches[0].clientX - photoTouchStartX;
+    photoTouchStartX = null;
+    if (Math.abs(delta) >= 45) movePhoto(delta < 0 ? 1 : -1);
+  }, { passive: true });
+
+  function showFinalSurprise() {
+    const section = $("#surprise-section");
+    if (!section || !section.classList.contains("hidden")) return;
+    section.classList.remove("hidden");
+    section.setAttribute("aria-hidden", "false");
+    section.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function openSurprise() {
+    $("#gift-box").classList.add("opened");
+    $("#surprise-button").classList.add("hidden");
+    $("#surprise-title").textContent = "عندي حاجة أخيرة ليكي 🎁";
+    $("#surprise-copy").textContent = "بس قبل الرسالة الأخيرة... أمنية صغيرة.";
+
+    window.setTimeout(() => {
+      $("#cake-section").classList.remove("hidden");
+      $("#cake-section").setAttribute("aria-hidden", "false");
+      $("#cake-section").scrollIntoView({ behavior: "smooth", block: "center" });
+      burst($("#cake-wrap"));
+    }, 550);
+  }
+
+  $("#surprise-button").addEventListener("click", openSurprise);
+  $("#gift-box").addEventListener("click", openSurprise);
+  $("#gift-box").addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openSurprise();
+    }
+  });
+
+  $("#candle").addEventListener("click", () => {
+    const candle = $("#candle");
+    if (candle.classList.contains("blown")) return;
+    candle.classList.add("blown");
+    $("#candle-hint").textContent = "الأمنية اتقالت... ✨";
+    $("#cake-wrap").classList.add("celebrate");
+    burst($("#cake-wrap"));
+
+    window.setTimeout(() => {
+      document.querySelector(".final-section")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }, 850);
+  });
+
   // ---------- FLOATING HEARTS ----------
   function createFloatingHearts() {
     const host = $("#hearts");
@@ -532,7 +673,7 @@
       entered = "";
       renderSlots();
       window.scrollTo({ top: 0, behavior: "instant" });
-    }, { once: true });
+    });
   }
 
   function setupSoundButton() {
@@ -567,7 +708,7 @@
 
   // ---------- REVEAL + AMBIENT MOTION ----------
   function setupRevealAnimations() {
-    const items = document.querySelectorAll(".section-heading, .section-copy, .intro-card, .scratch-card, .letter-card, .heart-field, .final-card");
+    const items = document.querySelectorAll(".section-heading, .section-copy, .intro-card, .scratch-card, .letter-card, .photo-card, .heart-field, .final-card, .surprise-card, .cake-card");
     if (!("IntersectionObserver" in window)) {
       items.forEach((item) => item.classList.add("is-visible"));
       return;
@@ -604,6 +745,8 @@
   }
 
   // ---------- SCROLL PROGRESS ----------
+  let progressUpdate = null;
+
   function setupProgress() {
     const bar = $("#progress-bar");
 
@@ -613,8 +756,11 @@
       bar.style.width = `${Math.min(100, Math.max(0, progress))}%`;
     };
 
-    window.addEventListener("scroll", update, { passive: true });
-    update();
+    if (!progressUpdate) {
+      progressUpdate = update;
+      window.addEventListener("scroll", progressUpdate, { passive: true });
+    }
+    progressUpdate();
   }
 
   function escapeHTML(value) {
