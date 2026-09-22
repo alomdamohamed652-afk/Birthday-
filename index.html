@@ -45,7 +45,7 @@
         <span id="progress-bar"></span>
       </div>
 
-      <button id="sound-toggle" class="sound-toggle" type="button" aria-label="تشغيل أو إيقاف الموسيقى">♪</button>
+      <button id="sound-toggle" class="sound-toggle" type="button" aria-label="تشغيل أو إيقاف الموسيقى"><span class="sound-icon">♪</span><span class="sound-name" id="sound-name">الموسيقى</span></button>
 
       <header class="hero" data-section="hero">
         <div class="hero-glow"></div>
@@ -122,6 +122,30 @@
         <p class="found-count"><span id="found-count">0</span> / <span id="heart-total">0</span> little hearts found</p>
       </section>
 
+      <section class="surprise-section hidden" id="surprise-section" aria-hidden="true">
+        <div class="surprise-card">
+          <p class="eyebrow">المفاجأة الأخيرة</p>
+          <div class="gift-box" id="gift-box" role="button" tabindex="0" aria-label="افتحي المفاجأة">🎁</div>
+          <h3 id="surprise-title">لقيتيهم كلهم؟</h3>
+          <p id="surprise-copy">يبقى فاضل حاجة واحدة بس...</p>
+          <button class="surprise-button" id="surprise-button" type="button">🎁 افتحي المفاجأة الأخيرة</button>
+        </div>
+      </section>
+
+      <section class="cake-section hidden" id="cake-section" aria-hidden="true">
+        <div class="cake-card">
+          <p class="eyebrow">أمنية صغيرة</p>
+          <h3>اطفي الشمعة 🎂</h3>
+          <p>خدي نفس... واتمني حاجة حلوة قبل ما تطفيها.</p>
+          <div class="cake-wrap" id="cake-wrap">
+            <button class="candle" id="candle" type="button" aria-label="إطفاء الشمعة"><span class="flame"></span></button>
+            <div class="cake"><span class="cake-icing"></span></div>
+            <div class="plate"></div>
+          </div>
+          <p class="candle-hint" id="candle-hint">دوسي على الشمعة ✨</p>
+        </div>
+      </section>
+
       <section class="final-section" data-section="final">
         <div class="final-card">
           <div class="final-stars">✦　♡　✦</div>
@@ -135,6 +159,22 @@
       </section>
     </section>
   </main>
+
+  <!-- PHOTO VIEWER -->
+  <div class="photo-modal hidden" id="photo-modal" role="dialog" aria-modal="true" aria-labelledby="photo-modal-title">
+    <div class="photo-modal-backdrop" data-photo-close></div>
+    <article class="photo-viewer">
+      <button class="photo-close" type="button" data-photo-close aria-label="إغلاق">×</button>
+      <button class="photo-nav photo-prev" id="photo-prev" type="button" aria-label="الصورة السابقة">‹</button>
+      <div class="photo-viewer-media" id="photo-viewer-media"></div>
+      <button class="photo-nav photo-next" id="photo-next" type="button" aria-label="الصورة التالية">›</button>
+      <div class="photo-viewer-info">
+        <span id="photo-counter">1 / 1</span>
+        <h3 id="photo-modal-title"></h3>
+        <p id="photo-modal-caption"></p>
+      </div>
+    </article>
+  </div>
 
   <!-- LETTER MODAL -->
   <div class="modal hidden" id="letter-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
