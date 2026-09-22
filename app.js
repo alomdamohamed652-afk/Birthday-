@@ -671,6 +671,21 @@
       lock.classList.remove("hidden", "exit");
       unlocked = false;
       entered = "";
+
+      const surprise = $("#surprise-section");
+      const cakeSection = $("#cake-section");
+      surprise.classList.add("hidden");
+      cakeSection.classList.add("hidden");
+      surprise.setAttribute("aria-hidden", "true");
+      cakeSection.setAttribute("aria-hidden", "true");
+      $("#gift-box").classList.remove("opened");
+      $("#surprise-button").classList.remove("hidden");
+      $("#surprise-title").textContent = "لقيتيهم كلهم؟";
+      $("#surprise-copy").textContent = "يبقى فاضل حاجة واحدة بس...";
+      $("#candle").classList.remove("blown");
+      $("#candle-hint").textContent = "دوسي على الشمعة ✨";
+      $("#cake-wrap").classList.remove("celebrate");
+
       renderSlots();
       window.scrollTo({ top: 0, behavior: "instant" });
     });
