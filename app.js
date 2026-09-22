@@ -20,10 +20,17 @@
 
   document.title = cfg.site?.title || "A Little Birthday Story";
 
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    });
+  }
+
   $("#lock-eyebrow").textContent = cfg.lockScreen.eyebrow;
   $("#lock-title").innerHTML = cfg.lockScreen.title;
   $("#lock-subtitle").textContent = cfg.lockScreen.subtitle;
   $("#pin-hint").textContent = cfg.lockScreen.hint;
+  setupCountdown();
 
   $("#hero-eyebrow").textContent = cfg.hero.eyebrow;
   $("#hero-prefix").textContent = cfg.hero.titlePrefix;
@@ -47,6 +54,56 @@
   $("#final-message").textContent = cfg.final.message;
   $("#signature").textContent = cfg.final.signature;
   $("#replay-button").textContent = cfg.final.button;
+
+  // ---------- COUNTDOWN ----------
+
+  function setupCountdown() {
+    const box = $("#countdown");
+    const settings = cfg.site?.countdown;
+    if (!box || settings?.enabled === false) return;
+
+    const raw = String(cfg.birthday || "");
+    const day = Number(raw.slice(0, 2));
+    const month = Number(raw.slice(2, 4));
+    if (!day || !month) return;
+
+    $("#countdown-label").textContent = settings.label || "فاضل على اليوم الحلو";
+
+    const update = () => {
+      const now = new Date();
+      let target = new Date(now.getFullYear(), month - 1, day, 0, 0, 0, 0);
+      const today = now.getMonth() === month - 1 && now.getDate() === day;
+
+      if (!today && target < now) {
+        target = new Date(now.getFullYear() + 1, month - 1, day, 0, 0, 0, 0);
+      }
+
+      box.classList.remove("hidden");
+
+      if (today) {
+        $("#countdown-label").textContent = "النهارده يومك ♡";
+        ["days", "hours", "minutes", "seconds"].forEach((part) => {
+          $("#countdown-" + part).textContent = "00";
+        });
+        return;
+      }
+
+      const diff = Math.max(0, target - now);
+      const values = {
+        days: Math.floor(diff / 86400000),
+        hours: Math.floor(diff / 3600000) % 24,
+        minutes: Math.floor(diff / 60000) % 60,
+        seconds: Math.floor(diff / 1000) % 60
+      };
+
+      Object.entries(values).forEach(([key, value]) => {
+        $("#countdown-" + key).textContent = String(value).padStart(2, "0");
+      });
+    };
+
+    update();
+    window.setInterval(update, 1000);
+  }
 
   // ---------- PIN ----------
   function renderSlots() {
@@ -168,6 +225,7 @@
       audio.loop = music.loop !== false;
       audio.volume = typeof music.volume === "number" ? music.volume : 0.35;
       audio.preload = "auto";
+      audio.addEventListener("error", showMusicFallback, { once: true });
     }
 
     audio.play().then(() => {
@@ -191,8 +249,19 @@
       toggle.title = "Play music";
       toggle.querySelector(".sound-icon").textContent = "♪";
         toggle.querySelector(".sound-name").textContent = "الموسيقى";
+      showMusicFallback();
     });
   }
+
+  function showMusicFallback() {
+    const fallback = $("#music-fallback");
+    if (fallback) fallback.classList.remove("hidden");
+  }
+
+  $("#music-fallback-button").addEventListener("click", () => {
+    startMusic();
+    $("#music-fallback").classList.add("hidden");
+  });
 
   renderSlots();
 
@@ -243,6 +312,7 @@
         img.alt = photo.title || ("ذكرى " + (index + 1));
         img.loading = "lazy";
         img.decoding = "async";
+        img.style.objectPosition = photo.focus || "center center";
         card.appendChild(img);
       } else {
         const placeholder = document.createElement("div");
@@ -715,6 +785,32 @@
     if (Math.abs(delta) >= 45) movePhoto(delta < 0 ? 1 : -1);
   }, { passive: true });
 
+  function celebrate(type = "gift") {
+    if (cfg.site?.celebration?.enabled === false) return;
+
+    const layer = $("#celebration-layer");
+    if (!layer) return;
+
+    const count = Math.min(110, Math.max(30, Number(cfg.site?.celebration?.particles) || 72));
+    layer.innerHTML = "";
+
+    for (let i = 0; i < count; i += 1) {
+      const particle = document.createElement("span");
+      particle.className = "celebration-particle " + (type === "candle" ? "spark" : "confetti");
+      particle.textContent = type === "candle" ? (i % 3 ? "✦" : "♥") : "";
+      particle.style.setProperty("--x", (50 + (Math.random() * 70 - 35)) + "%");
+      particle.style.setProperty("--dx", (Math.random() * 260 - 130).toFixed(1) + "px");
+      particle.style.setProperty("--delay", (Math.random() * .25).toFixed(2) + "s");
+      particle.style.setProperty("--size", (5 + Math.random() * 7) + "px");
+      particle.style.setProperty("--rot", (Math.random() * 360) + "deg");
+      layer.appendChild(particle);
+    }
+
+    window.setTimeout(() => {
+      layer.innerHTML = "";
+    }, 1500);
+  }
+
   function showFinalSurprise() {
     const section = $("#surprise-section");
     if (!section || !section.classList.contains("hidden")) return;
@@ -726,6 +822,7 @@
   function openSurprise() {
     if ($("#gift-box").classList.contains("opened")) return;
     playFx("gift");
+    celebrate("gift");
     $("#gift-box").classList.add("opened");
     $("#surprise-button").classList.add("hidden");
     $("#surprise-title").textContent = "عندي حاجة أخيرة ليكي 🎁";
@@ -753,6 +850,7 @@
     if (candle.classList.contains("blown")) return;
     candle.classList.add("blown");
     playFx("candle");
+    celebrate("candle");
     $("#candle-hint").textContent = "الأمنية اتقالت... ✨";
     $("#cake-wrap").classList.add("celebrate");
     burst($("#cake-wrap"));
@@ -783,6 +881,108 @@
       host.appendChild(heart);
     }
   }
+
+  // ---------- KEEPSAKE IMAGE ----------
+
+  async function createKeepsake() {
+    if (cfg.site?.keepsake?.enabled === false) return;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 1080;
+    canvas.height = 1350;
+
+    const ctx = canvas.getContext("2d");
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, "#fff8f7");
+    gradient.addColorStop(.55, "#f9e6eb");
+    gradient.addColorStop(1, "#fffaf7");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "rgba(201,127,145,.08)";
+    for (let i = 0; i < 18; i += 1) {
+      ctx.beginPath();
+      ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, 12 + Math.random() * 25, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#c97f91";
+    ctx.font = "700 30px Cairo, sans-serif";
+    ctx.fillText("♡  BIRTHDAY MEMORY  ♡", canvas.width / 2, 110);
+
+    ctx.fillStyle = "#a86475";
+    ctx.font = "700 66px Cairo, sans-serif";
+    wrapCanvasText(ctx, "كل سنة وإنتِ طيبة يا " + cfg.recipientName, canvas.width / 2, 360, 900, 82);
+
+    ctx.fillStyle = "#927d82";
+    ctx.font = "500 30px Cairo, sans-serif";
+    wrapCanvasText(ctx, cfg.final.message, canvas.width / 2, 570, 820, 58);
+
+    ctx.fillStyle = "#c97f91";
+    ctx.font = "600 30px Cairo, sans-serif";
+    wrapCanvasText(ctx, cfg.final.signature, canvas.width / 2, 920, 820, 52);
+
+    ctx.font = "80px Georgia, serif";
+    ctx.fillText("♥", canvas.width / 2, 1090);
+
+    ctx.fillStyle = "#b79da4";
+    ctx.font = "500 20px Cairo, sans-serif";
+    ctx.fillText("حكاية صغيرة معمولة مخصوص لنيرة", canvas.width / 2, 1240);
+
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+
+      const file = new File(
+        [blob],
+        cfg.site?.keepsake?.filename || "birthday-memory.png",
+        { type: "image/png" }
+      );
+
+      try {
+        if (navigator.share && navigator.canShare?.({ files: [file] })) {
+          await navigator.share({
+            title: "Birthday Memory · " + cfg.recipientName,
+            text: "كل سنة وإنتِ طيبة يا " + cfg.recipientName + " ♡",
+            files: [file]
+          });
+          return;
+        }
+      } catch (error) {
+        if (error?.name === "AbortError") return;
+      }
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = file.name;
+      link.click();
+      URL.revokeObjectURL(url);
+    }, "image/png");
+  }
+
+  function wrapCanvasText(ctx, text, centerX, startY, maxWidth, lineHeight) {
+    const words = String(text).split(/\s+/);
+    const lines = [];
+    let line = "";
+
+    words.forEach((word) => {
+      const test = line ? line + " " + word : word;
+      if (ctx.measureText(test).width > maxWidth && line) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = test;
+      }
+    });
+
+    if (line) lines.push(line);
+    lines.forEach((line, index) => {
+      ctx.fillText(line, centerX, startY + index * lineHeight);
+    });
+  }
+
+  $("#memory-button").addEventListener("click", createKeepsake);
 
   // ---------- UX ----------
   function setupIntroButton() {
