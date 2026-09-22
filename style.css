@@ -896,3 +896,57 @@ body::-webkit-scrollbar-thumb { background: linear-gradient(180deg, rgba(201,127
  .heart-field { height:350px; }
 }
 @media (min-width:641px) { .photos-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+
+/* ---------- PHOTO VIEWER + SURPRISE ---------- */
+.sound-toggle { width:auto; min-width:42px; padding:0 12px; display:flex; align-items:center; justify-content:center; gap:6px; }
+.sound-name { font-size:8px; max-width:0; opacity:0; overflow:hidden; white-space:nowrap; transition:max-width .35s ease,opacity .25s ease; }
+.sound-toggle:hover .sound-name, .sound-toggle.playing .sound-name { max-width:55px; opacity:1; }
+.photo-card:focus-visible { outline:2px solid var(--rose); outline-offset:4px; }
+.photo-modal { position:fixed; inset:0; z-index:120; display:grid; place-items:center; padding:20px; }
+.photo-modal.hidden { display:none; }
+.photo-modal-backdrop { position:absolute; inset:0; background:rgba(49,31,36,.72); backdrop-filter:blur(12px); }
+.photo-viewer { position:relative; z-index:1; width:min(920px,100%); max-height:92svh; display:grid; grid-template-columns:46px minmax(0,1fr) 46px; grid-template-rows:minmax(0,1fr) auto; gap:8px; padding:14px; border:1px solid rgba(255,255,255,.24); border-radius:28px; background:rgba(255,250,248,.9); box-shadow:0 30px 100px rgba(20,10,15,.28); }
+.photo-viewer-media { min-width:0; min-height:0; grid-column:2; display:grid; place-items:center; overflow:hidden; border-radius:19px; background:#f1e2e2; touch-action:pan-y; }
+.photo-viewer-image { width:100%; max-height:68svh; object-fit:contain; display:block; }
+.photo-viewer-empty { min-height:260px; display:grid; place-items:center; color:var(--muted); padding:30px; }
+.photo-close { position:absolute; z-index:3; top:10px; left:10px; width:38px; height:38px; border:0; border-radius:50%; background:rgba(255,255,255,.82); color:var(--rose-deep); font-size:25px; cursor:pointer; }
+.photo-nav { align-self:center; width:40px; height:40px; border:1px solid var(--line); border-radius:50%; background:rgba(255,255,255,.75); color:var(--rose-deep); font-size:30px; line-height:1; cursor:pointer; transition:.2s; }
+.photo-nav:hover { transform:scale(1.07); background:#fff; }
+.photo-prev { grid-column:1; grid-row:1; } .photo-next { grid-column:3; grid-row:1; }
+.photo-viewer-info { grid-column:1 / -1; text-align:center; padding:6px 42px 8px; }
+.photo-viewer-info span { color:var(--rose); font-size:9px; } .photo-viewer-info h3 { margin:4px 0 2px; color:#a86475; font-size:24px; } .photo-viewer-info p { margin:0; color:var(--muted); font-size:11px; line-height:1.8; }
+.surprise-section,.cake-section { width:min(900px,calc(100% - 28px)); margin:0 auto; padding:70px 0; text-align:center; scroll-margin-top:30px; }
+.surprise-card,.cake-card { padding:55px 24px; border:1px solid var(--line); border-radius:32px; background:linear-gradient(145deg,rgba(255,255,255,.75),rgba(250,231,235,.56)); box-shadow:var(--shadow); }
+.surprise-card h3,.cake-card h3 { margin:8px 0 10px; color:#a86475; font-size:clamp(32px,7vw,52px); }
+.surprise-card p,.cake-card p { color:var(--muted); line-height:1.9; }
+.gift-box { width:100px; height:100px; margin:4px auto 18px; display:grid; place-items:center; font-size:72px; cursor:pointer; user-select:none; transition:transform .65s var(--ease-smooth),filter .4s; }
+.gift-box:hover { transform:translateY(-8px) rotate(-3deg) scale(1.04); }
+.gift-box.opened { animation:giftOpen .8s var(--ease-smooth) both; }
+@keyframes giftOpen { 50% { transform:scale(1.18) rotate(5deg); } 100% { transform:scale(.9); opacity:.72; } }
+.surprise-button { min-height:48px; padding:12px 22px; border:1px solid rgba(201,127,145,.35); border-radius:999px; background:#fff; color:var(--rose-deep); cursor:pointer; transition:.25s; }
+.surprise-button:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(150,90,105,.12); }
+.cake-wrap { position:relative; width:220px; height:210px; margin:28px auto 12px; display:grid; place-items:end center; }
+.cake { position:absolute; bottom:45px; width:145px; height:82px; border-radius:12px 12px 20px 20px; background:linear-gradient(#f4d4d9,#dba6b2); box-shadow:0 13px 0 #c78a98,0 22px 30px rgba(120,70,80,.12); }
+.cake::before { content:""; position:absolute; inset:-12px 0 auto; height:25px; border-radius:50%; background:#fff2f3; box-shadow:inset 0 -5px 0 #e6b9c2; }
+.cake-icing { position:absolute; z-index:2; top:-7px; left:18px; width:20px; height:25px; border-radius:0 0 12px 12px; background:#fff2f3; box-shadow:28px 2px 0 #fff2f3,56px -2px 0 #fff2f3,84px 2px 0 #fff2f3; }
+.plate { position:absolute; bottom:32px; width:190px; height:18px; border-radius:50%; background:#e7c8cd; box-shadow:0 7px 0 rgba(170,105,120,.2); }
+.candle { position:absolute; z-index:4; bottom:125px; width:16px; height:48px; border:0; border-radius:4px; background:repeating-linear-gradient(135deg,#fff 0 7px,#e8a9b5 7px 13px); cursor:pointer; }
+.flame { position:absolute; left:50%; top:-25px; width:14px; height:22px; transform:translateX(-50%) rotate(45deg); border-radius:60% 40% 60% 40%; background:#f0a35e; box-shadow:0 0 18px rgba(240,163,94,.65); animation:flame .8s ease-in-out infinite alternate; }
+@keyframes flame { to { transform:translateX(-50%) rotate(45deg) scale(.86); } }
+.candle.blown .flame { display:none; } .cake-wrap.celebrate { animation:cakeCelebrate .7s var(--ease-smooth); }
+@keyframes cakeCelebrate { 35% { transform:translateY(-5px) rotate(-1deg); } 70% { transform:translateY(2px) rotate(1deg); } }
+.candle-hint { font-size:10px !important; color:var(--rose) !important; }
+@media(max-width:640px) {
+ .photo-modal { padding:10px; }
+ .photo-viewer { width:100%; max-height:94svh; grid-template-columns:38px minmax(0,1fr) 38px; padding:9px; border-radius:22px; }
+ .photo-viewer-media { grid-column:1 / -1; grid-row:1; min-height:55svh; }
+ .photo-viewer-image { max-height:66svh; }
+ .photo-prev,.photo-next { z-index:3; position:absolute; top:50%; }
+ .photo-prev { left:10px; } .photo-next { right:10px; }
+ .photo-viewer-info { grid-column:1 / -1; grid-row:2; padding:4px 25px 8px; }
+ .photo-viewer-info h3 { font-size:20px; }
+ .photo-close { top:7px; left:7px; }
+ .sound-name { display:none; }
+ .surprise-section,.cake-section { padding:52px 0; }
+ .surprise-card,.cake-card { padding:42px 18px; border-radius:26px; }
+}
