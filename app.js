@@ -290,7 +290,7 @@
     let last = null;
     let resizeTimer;
 
-    function paintCover() {
+    function paintCover(preserveCanvas = null) {
       const rect = canvas.getBoundingClientRect();
       const ratio = Math.min(window.devicePixelRatio || 1, 2);
 
@@ -321,6 +321,22 @@
       ctx.fillText("SCRATCH TO REVEAL", rect.width / 2, rect.height / 2 - 2);
       ctx.font = "22px serif";
       ctx.fillText("♡", rect.width / 2, rect.height / 2 + 29);
+
+      if (preserveCanvas) {
+        const mask = document.createElement("canvas");
+        mask.width = preserveCanvas.width;
+        mask.height = preserveCanvas.height;
+        const maskCtx = mask.getContext("2d");
+        maskCtx.drawImage(preserveCanvas, 0, 0);
+        const pixels = maskCtx.getImageData(0, 0, mask.width, mask.height);
+        for (let i = 3; i < pixels.data.length; i += 4) {
+          pixels.data[i] = 255 - pixels.data[i];
+        }
+        maskCtx.putImageData(pixels, 0, 0);
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.drawImage(mask, 0, 0, rect.width, rect.height);
+        ctx.globalCompositeOperation = "source-over";
+      }
     }
 
     function point(event) {
@@ -385,7 +401,15 @@
     window.addEventListener("resize", () => {
       window.clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(() => {
-        if (!wrapper.classList.contains("revealed")) paintCover();
+        if (wrapper.classList.contains("revealed")) return;
+
+        const previous = document.createElement("canvas");
+        previous.width = canvas.width;
+        previous.height = canvas.height;
+        const previousCtx = previous.getContext("2d");
+        previousCtx.drawImage(canvas, 0, 0);
+
+        paintCover(previous);
       }, 120);
     });
 
